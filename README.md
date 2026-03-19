@@ -1,1 +1,33 @@
-Project Plan: Nairobi Traffic Congestion Prediction1. Problem StatementNairobi faces severe economic losses and reduced quality of life due to unpredictable traffic congestion. While global navigation tools provide live updates, there is a lack of localized predictive models that integrate Nairobi-specific "friction factors"—such as school transition weeks (opening/closing/midterms), high-density matatu stages, and hourly weather patterns. This project aims to develop a machine learning model that predicts directional congestion levels (0–3) to help commuters plan trips and assist urban planners in identifying bottlenecks.2. Dataset SourcesTo build a robust "Feature Bank," the project integrates five distinct data streams:Target Variable (Congestion): A hybrid of TomTom Traffic Stats (historical speeds) and primary data collection using Google Maps Typical Traffic (manual labeling of 21 key segments at 2-hour intervals).Infrastructure (OSM): Road structural characteristics (lanes, road type, and node coordinates) extracted via OpenStreetMap.Public Transport (GTFS): Matatu route and stop density from the Digital Matatus GTFS dataset to measure "commuter friction."Environmental (Weather): Hourly rainfall and temperature data fetched from the Open-Meteo API.Temporal (School Calendar): 2025 Ministry of Education dates, specifically engineered to flag "Transition Weeks" (Opening, Closing, and Midterms) as high-impact events.3. Proposed Approach & Modeling TechniquesThe project follows a supervised learning pipeline focused on Classification and Regression:Data Engineering: Categorizing school impact into levels (0: Holiday, 1: Normal Term, 2: Transition) and calculating Matatu Density within 150m of road segments.Spatial Matching: Using coordinate-based merging to link landmarks (Google Labels) to OSM Node IDs ($u, v$).Modeling: * Random Forest / XGBoost: To handle the non-linear relationship between rain, school terms, and traffic.Ordinal Encoding: Treating congestion as a ranked scale (0–3) to preserve the intensity of traffic levels.Evaluation: Using a temporal train/test split. Success is measured using Mean Absolute Error (MAE) for regression and F1-Score for congestion category accuracy.4. Expected OutcomesPredictive Model: A trained model capable of estimating congestion for any road segment in the study area based on a given date, time, and weather forecast.Feature Importance Ranking: A statistical breakdown of which factors (e.g., "Is it a Midterm week?" vs "Is it raining?") contribute most to Nairobi’s gridlock.Visual Analysis: A map-based visualization showing predicted "hotspots" during school transition weeks compared to holiday periods.Proof of Concept: Demonstration of how manual "Typical Traffic" labels can be used to ground-truth official traffic statistics in data-scarce environments.
+# Nairobi Traffic Congestion Prediction 🚗🇰🇪
+
+## 📌 Problem Statement
+Nairobi’s road network suffers from severe, unpredictable congestion that leads to significant economic loss. Current navigation tools offer real-time data but lack predictive depth regarding local "friction factors." This project develops a machine learning model to predict directional traffic congestion (levels 0–3) by analyzing the intersection of weather, matatu density, and the school calendar—specifically targeting **"Transition Weeks"** (opening, closing, and midterms) which represent the city's peak gridlock periods.
+
+---
+
+## 📊 Dataset Sources
+The model is built on a multi-source "Feature Bank" to capture the complexity of Nairobi traffic:
+
+* **Target Variable (Congestion):** A hybrid ground-truth dataset combining **TomTom Traffic Stats** (historical speed ratios) and primary data collection via **Google Maps Typical Traffic** (manual labeling of 21 segments at 2-hour intervals).
+* **Public Transport (GTFS):** Route and stop density from the **Digital Matatus** dataset to quantify "commuter friction" at major stages.
+* **Infrastructure (OSM):** Structural road data (lanes, road types, and node coordinates) extracted via **OpenStreetMap**.
+* **Environmental (Weather):** Hourly precipitation and temperature data from the **Open-Meteo API**.
+* **Temporal (School Calendar):** 2025 Ministry of Education dates, engineered to flag "High-Impact" weeks (Midterms, Opening, and Closing).
+
+---
+
+## ⚙️ Proposed Approach & Modeling Techniques
+We are implementing a supervised learning pipeline in Python:
+
+1.  **Feature Engineering:** Encoding the school calendar into an ordinal "Impact Level" (0–2) and calculating spatial matatu density within a 150m buffer of road segments.
+2.  **Spatial Matching:** Linking manual Google Map landmarks to OpenStreetMap Node IDs ($u, v$) using coordinate-based joins.
+3.  **Modeling:** * **Random Forest / XGBoost Regressors:** Chosen for their ability to handle non-linear relationships (e.g., the compounding effect of rain during a school opening week).
+    * **Ordinal Classification:** Binning traffic into four distinct levels: **0** (Free-flow), **1** (Moderate), **2** (Heavy), and **3** (Gridlock).
+4.  **Evaluation:** Using a temporal train/test split. Performance is measured using **Mean Absolute Error (MAE)** and **F1-Score**.
+
+---
+
+## 🚀 Expected Outcomes
+* **Predictive Tool:** A model capable of forecasting congestion levels for specific road segments based on future date/time and weather forecasts.
+* **Bottleneck Analysis:** Identification of the primary drivers of traffic (e.g., quantifying how much a "Midterm Week" increases travel time).
+* **Data Strategy:** A proof-of-concept demonstrating how manual labeling of "Typical Traffic" can effectively augment official data in emerging markets.
