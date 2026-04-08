@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nairobi SmartTraffic AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_key }}&libraries=places"></script>
+    <style>
+        /* Animated Living Background */
+        body { 
+            margin: 0; font-family: 'Poppins', sans-serif; color: #e2e8f0;
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #0f172a, #064e3b);
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite; min-height: 100vh;
+        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .hero { padding: 50px 0 30px; background: transparent; }
+        .hero-title { font-weight: 700; letter-spacing: -0.5px; color: #ffffff; text-shadow: 0 4px 10px rgba(0,0,0,0.5);}
+        
+        /* FLAWLESS INFINITE TICKER TAPE */
+        .ticker-wrap {
+            width: 100%; overflow: hidden; background-color: rgba(0, 0, 0, 0.4);
+            padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 40px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            display: flex; white-space: nowrap;
+        }
+        .ticker {
+            display: flex;
+            animation: ticker-scroll 30s linear infinite; /* Removed hover pause */
+        }
+        .ticker__item {
+            padding: 0 3rem; font-size: 0.95rem; color: #cbd5e1; font-weight: 500;
+        }
+        @keyframes ticker-scroll { 
+            0% { transform: translateX(0); } 
+            100% { transform: translateX(-50%); } 
+        }
+
+        /* Frosted Glass Card */
+        .app-card { 
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; 
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); padding: 45px; color: #ffffff;
+        }
+
+        .form-control, .form-select { border-radius: 12px; padding: 14px 18px; border: 1px solid rgba(255, 255, 255, 0.15); background-color: rgba(0, 0, 0, 0.2); color: #ffffff; font-size: 0.95rem; }
+        .form-control:focus, .form-select:focus { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2); border-color: #10b981; background-color: rgba(0, 0, 0, 0.4); color: #ffffff; }
+        .form-control::placeholder { color: #94a3b8; }
+        .input-group-text { background: rgba(0, 0, 0, 0.2); border-right: none; border-color: rgba(255, 255, 255, 0.15); color: #94a3b8; }
+        .form-control.border-start-0 { border-left: none; }
+        
+        .btn-light { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; }
+        .btn-light:hover { background: rgba(255,255,255,0.1); color: white;}
+
+        .btn-analyze { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 18px; border-radius: 14px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4); }
+        .btn-analyze:hover { transform: translateY(-2px); box-shadow: 0 15px 25px -5px rgba(16, 185, 129, 0.5); color: white; }
+        
+        .section-icon { color: #38bdf8; margin-right: 8px; }
+        .form-label { color: #cbd5e1 !important; }
+
+        .bg-light.border { background: rgba(0,0,0,0.2) !important; border-color: rgba(255,255,255,0.1) !important;}
+        .form-check-label { color: #e2e8f0 !important; }
+        .form-check-input:checked { background-color: #10b981; border-color: #10b981; }
+
+        .time-toggle { display: flex; gap: 10px; margin-bottom: 35px; } 
+        .time-toggle label { flex: 1; text-align: center; padding: 12px; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; cursor: pointer; font-weight: 600; color: #94a3b8; transition: 0.3s; }
+        .time-toggle input[type="radio"]:checked + label { border-color: #10b981; background-color: rgba(16, 185, 129, 0.1); color: #10b981; }
+
+        .pac-container { background-color: #1e293b; border: 1px solid #334155; color: white;}
+        .pac-item { color: #cbd5e1; border-top: 1px solid #334155;}
+        .pac-item-query { color: white; }
+
+        #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner-border { width: 3rem; height: 3rem; color: #10b981; }
+        #loading-overlay h4 { color: white !important;}
+    </style>
+</head>
+<body>
+
+<div id="loading-overlay">
+    <div class="spinner-border mb-4" role="status"></div>
+    <h4 class="fw-bold text-dark">Analyzing Route...</h4>
+    <p class="text-muted">Calculating real-time Nairobi traffic data</p>
+</div>
+
+<div class="hero text-center">
+    <div class="container">
+        <h1 class="hero-title mb-3">Nairobi SmartTraffic AI</h1>
+        <p class="lead text-white-50">Predictive commute forecasting powered by Machine Learning</p>
+    </div>
+</div>
+
+<div class="ticker-wrap">
+    <div class="ticker">
+        <!-- Text Group 1 -->
+        <div class="ticker__item">🟢 <strong>EXPRESSWAY:</strong> Free flowing traffic.</div>
+        <div class="ticker__item">🔴 <strong>MOMBASA ROAD:</strong> Heavy congestion near Syokimau.</div>
+        <div class="ticker__item">🟡 <strong>WAIYAKI WAY:</strong> Moderate delays approaching Westlands.</div>
+        <div class="ticker__item">🏫 <strong>ALERT:</strong> School opening week expected to increase delays by 20%.</div>
+        <div class="ticker__item">🌧️ <strong>WEATHER AI:</strong> Live rain sensors active.</div>
+        
+        <!-- Text Group 2 (Duplicated for perfectly seamless continuous looping) -->
+        <div class="ticker__item">🟢 <strong>EXPRESSWAY:</strong> Free flowing traffic.</div>
+        <div class="ticker__item">🔴 <strong>MOMBASA ROAD:</strong> Heavy congestion near Syokimau.</div>
+        <div class="ticker__item">🟡 <strong>WAIYAKI WAY:</strong> Moderate delays approaching Westlands.</div>
+        <div class="ticker__item">🏫 <strong>ALERT:</strong> School opening week expected to increase delays by 20%.</div>
+        <div class="ticker__item">🌧️ <strong>WEATHER AI:</strong> Live rain sensors active.</div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="app-card">
+                
+                {% if error %}
+                <div class="alert alert-danger rounded-4 border-0 bg-danger bg-opacity-10 text-danger mb-4 px-4 py-3">
+                    <i class="fas fa-exclamation-circle me-2"></i> {{ error }}
+                </div>
+                {% endif %}
+
+                <form method="POST" id="trafficForm" onsubmit="showLoading()">
+                    {% csrf_token %}
+                    
+                    <h5 class="fw-bold text-white mb-4"><i class="fas fa-route section-icon"></i> Route Details</h5>
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-medium small text-uppercase">Starting Point</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="fas fa-circle-dot text-primary"></i></span>
+                            <input id="origin-input" type="text" class="form-control border-start-0" placeholder="Search origin or use GPS">
+                        </div>
+                        <button type="button" class="btn btn-light w-100 fw-medium rounded-3" onclick="getLocation()">
+                            <i class="fas fa-crosshairs me-1"></i> Use My Current Location
+                        </button>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-medium small text-uppercase">Destination</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-location-dot text-danger"></i></span>
+                            <input id="destination-input" type="text" class="form-control border-start-0 form-control-lg" placeholder="Where to? (Select from dropdown)" required>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-3 mb-5 p-3 bg-light rounded-3 border">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="schoolCheck" name="school_impact" value="1">
+                            <label class="form-check-label fw-medium" for="schoolCheck">🏫 School Transition Week (Opening/Closing)</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="expresswayCheck" name="avoid_expressway" value="1">
+                            <label class="form-check-label fw-medium" for="expresswayCheck">🚫 Avoid Expressway (Tolls)</label>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="from_lat" id="from_lat" value="-1.279">
+                    <input type="hidden" name="from_lon" id="from_lon" value="36.817">
+                    <input type="hidden" name="to_lat" id="to_lat">
+                    <input type="hidden" name="to_lon" id="to_lon">
+
+                    <h5 class="fw-bold text-white mb-4"><i class="fas fa-clock section-icon"></i> Timing & Weather</h5>
+                    
+                    <div class="time-toggle mb-5">
+                        <input type="radio" name="timing_mode" id="leave_now" value="now" checked onchange="toggleTimeInputs()">
+                        <label for="leave_now"><i class="fas fa-bolt text-warning me-1"></i> Leave Right Now</label>
+                        
+                        <input type="radio" name="timing_mode" id="plan_later" value="later" onchange="toggleTimeInputs()">
+                        <label for="plan_later"><i class="fas fa-calendar-alt text-primary me-1"></i> Plan for Later</label>
+                    </div>
+
+                    <div class="row g-3 mb-5" id="manual_time_block" style="display: none;">
+                        <div class="col-md-5">
+                            <label class="form-label fw-medium small text-uppercase">Day of Week</label>
+                            <select name="day" id="manual-day" class="form-select">
+                                <option value="0">Monday</option><option value="1">Tuesday</option>
+                                <option value="2">Wednesday</option><option value="3">Thursday</option>
+                                <option value="4">Friday</option><option value="5">Saturday</option>
+                                <option value="6">Sunday</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-medium small text-uppercase">Hour (0-23)</label>
+                            <input type="number" name="hour" id="manual-hour" class="form-control" min="0" max="23">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-medium small text-uppercase">Forecast</label>
+                            <select name="rain" class="form-select">
+                                <option value="0.0">Dry / Sunny</option>
+                                <option value="5.0">Light Rain</option>
+                                <option value="15.0">Heavy Downpour</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-analyze w-100 text-uppercase">
+                        Predict Commute <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleTimeInputs() {
+        const isLater = document.getElementById('plan_later').checked;
+        const block = document.getElementById('manual_time_block');
+        if (isLater) {
+            block.style.display = 'flex';
+        } else {
+            block.style.display = 'none';
+        }
+    }
+
+    function showLoading() { 
+        if(document.getElementById('to_lat').value) {
+            document.getElementById('loading-overlay').style.display = 'flex'; 
+        }
+    }
+
+    function initAutocomplete() {
+        const options = { componentRestrictions: { country: "ke" }, fields: ["geometry", "name"] };
+        const originAutocomplete = new google.maps.places.Autocomplete(document.getElementById('origin-input'), options);
+        originAutocomplete.addListener('place_changed', () => {
+            const place = originAutocomplete.getPlace();
+            if (place.geometry) { document.getElementById('from_lat').value = place.geometry.location.lat(); document.getElementById('from_lon').value = place.geometry.location.lng(); }
+        });
+        const destAutocomplete = new google.maps.places.Autocomplete(document.getElementById('destination-input'), options);
+        destAutocomplete.addListener('place_changed', () => {
+            const place = destAutocomplete.getPlace();
+            if (place.geometry) { document.getElementById('to_lat').value = place.geometry.location.lat(); document.getElementById('to_lon').value = place.geometry.location.lng(); }
+        });
+    }
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                document.getElementById('from_lat').value = pos.coords.latitude;
+                document.getElementById('from_lon').value = pos.coords.longitude;
+                document.getElementById('origin-input').value = "📍 Current Location";
+            });
+        }
+    }
+
+    window.onload = function() { 
+        initAutocomplete(); 
+        const now = new Date();
+        document.getElementById('manual-hour').value = now.getHours();
+        document.getElementById('manual-day').value = now.getDay() === 0 ? 6 : now.getDay() - 1;
+    };
+</script>
+</body>
+</html>
