@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-alvs-$#hhh61k-flq0t=o1y#k#6&x#@%w*_0e(%0_!@*wqaj+@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['nairobi-traffic-ai.onrender.com', 'localhost', '127.0.0.1', '*']
 
 
 # Application definition
