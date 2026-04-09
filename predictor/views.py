@@ -126,8 +126,16 @@ def predict_traffic(request):
             line_color = colors.get(prediction_num, '#3b82f6')
 
             # --- MAPPING (Folium + Google Directions) ---
-            m = folium.Map(location=[(from_lat + to_lat)/2, (from_lon + to_lon)/2], zoom_start=13, zoom_control=False)
+            # 1. Create base map with NO default tiles to avoid OSM block
+            m = folium.Map(location=[(from_lat + to_lat)/2, (from_lon + to_lon)/2], zoom_start=13, zoom_control=False, tiles=None)
             
+            # 2. Add custom TileLayer with User-Agent to satisfy Render/OSM requirements
+            folium.TileLayer(
+                tiles='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                headers={'User-Agent': 'NairobiTrafficAI/1.0 (Contact: lauramukite25@gmail.com)'} # <-- UPDATE EMAIL
+            ).add_to(m)
+
             # --- GOOGLE DIRECTIONS WITH TOLL AVOIDANCE ---
             directions_url = f"https://maps.googleapis.com/maps/api/directions/json?origin={from_lat},{from_lon}&destination={to_lat},{to_lon}&key={GOOGLE_API_KEY}"
             
