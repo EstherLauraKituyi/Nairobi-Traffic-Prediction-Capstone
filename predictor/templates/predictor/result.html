@@ -44,9 +44,8 @@
         }
         .recommendation-text { font-size: 1.15rem; font-weight: 500; line-height: 1.6; color: #f8fafc; }
 
-        /* BRAND NEW BRIGHT ACTION BUTTON */
         .btn-back {
-            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); /* Bright Indigo */
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); 
             border: none;
             color: #ffffff !important;
             font-weight: 600;
@@ -58,7 +57,17 @@
         .btn-back:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 25px rgba(79, 70, 229, 0.6);
-            background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); /* Lighter on hover */
+            background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); 
+        }
+
+        /* NEW: ETA BADGE STYLING */
+        .eta-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
         }
     </style>
 </head>
@@ -75,9 +84,8 @@
                     <!-- Left Side: Data & Results -->
                     <div class="col-lg-5 p-5 d-flex flex-column justify-content-center">
                         
-                        <!-- NEW HIGH-VISIBILITY BUTTON -->
                         <div>
-                            <a href="{% url 'predict_traffic' %}" class="btn btn-back rounded-pill px-4 py-3 mb-5 d-inline-flex align-items-center w-100 justify-content-center text-uppercase">
+                            <a href="{% url 'predict_traffic' %}" class="btn btn-back rounded-pill px-4 py-3 mb-4 d-inline-flex align-items-center w-100 justify-content-center text-uppercase">
                                 <i class="fas fa-search-location me-3 fs-5"></i> Check Another Location
                             </a>
                         </div>
@@ -87,8 +95,17 @@
                             {{ prediction }}
                         </h1>
 
+                        <!-- NEW: LIVE ETA DASHBOARD WIDGET -->
+                        <div class="eta-badge mb-4">
+                            <i class="fas fa-stopwatch fs-1 text-warning me-4"></i>
+                            <div>
+                                <p class="mb-0 text-muted small text-uppercase fw-bold tracking-wide">Live Estimated Time</p>
+                                <h3 class="mb-0 fw-bold text-white">{{ eta }}</h3>
+                            </div>
+                        </div>
+
                         <!-- Confidence Bar -->
-                        <div class="mb-5">
+                        <div class="mb-4">
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="fw-medium text-light small">AI Confidence Level</span>
                                 <span class="fw-bold small" style="color: #38bdf8;">{{ confidence }}%</span>
@@ -98,8 +115,8 @@
                             </div>
                         </div>
 
-                        <!-- BIGGER Recommendation Area -->
-                        <div class="recommendation-box p-4 mt-3">
+                        <!-- Recommendation Area -->
+                        <div class="recommendation-box p-4 mt-2">
                             <h5 class="fw-bold mb-3" style="color: #38bdf8;">
                                 <i class="fas fa-robot me-2"></i> Smart Advice
                             </h5>
@@ -109,7 +126,7 @@
                                 {% elif prediction == "Moderate" %}
                                     Standard traffic volume. You'll hit a few slow patches, but nothing out of the ordinary for Nairobi.
                                 {% elif prediction == "Heavy" %}
-                                    Significant slowdowns detected! Leave early or consider using alternative routes if you are in a rush.
+                                    Significant slowdowns detected! Leave early or look at the grey alternative routes on the map.
                                 {% else %}
                                     <strong>Severe Gridlock.</strong> Avoid this route right now if possible, or heavily consider taking the Expressway to bypass the mess.
                                 {% endif %}

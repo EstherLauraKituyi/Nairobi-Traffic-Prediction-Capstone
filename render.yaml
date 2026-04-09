@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: nairobi-traffic-ai
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn nairobi_traffic_system.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
