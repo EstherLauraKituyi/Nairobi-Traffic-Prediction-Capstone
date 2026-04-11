@@ -56,3 +56,19 @@ The model is built on a multi-source "Feature Bank":
    ```bash
    git clone [https://github.com/YourUsername/nairobi-traffic-ai.git](https://github.com/YourUsername/nairobi-traffic-ai.git)
    cd nairobi-traffic-ai
+
+   Install dependencies:
+
+
+pip install -r requirements.txt
+Configure Environment Variables:
+Create a .env file in the root directory and add your keys:
+
+
+GOOGLE_MAPS_API_KEY=your_key_here
+OPENWEATHER_API_KEY=your_key_here
+SECRET_KEY=your_django_secret_key
+Run the server:
+
+Bash
+python manage.py runserver
