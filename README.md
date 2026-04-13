@@ -1,10 +1,27 @@
-# Nairobi SmartTraffic AI 🚗🇰🇪
+# 🚗🇰🇪 Nairobi SmartTraffic AI 
 **A Predictive & Real-Time Traffic Management System for Nairobi's Road Networks**
 
-## 📌 Project Overview
-Nairobi SmartTraffic AI is a full-stack Machine Learning application developed to solve the unpredictability of urban congestion in Kenya. While traditional GPS tools provide real-time snapshots, this system bridges the gap by **predicting** future traffic states using a Random Forest model and providing **incident-aware routing** via Google Maps API integration.
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![Django](https://img.shields.io/badge/Django-Production-green)
+![Scikit-Learn](https://img.shields.io/badge/Machine_Learning-Scikit_Learn-orange)
+![Google Maps](https://img.shields.io/badge/API-Google_Maps-4285F4)
 
-This project was developed as part of a Data Science Traineeship, focusing on how "friction factors" like the school calendar and weather impact city-wide mobility.
+## 📌 Project Overview
+Nairobi SmartTraffic AI is a full-stack Machine Learning application developed to solve the unpredictability of urban congestion in Kenya. While traditional GPS tools provide real-time snapshots, this system bridges the gap by **predicting future traffic states** using a Random Forest model, while also providing **incident-aware live routing** via dynamic API integrations.
+
+This project was developed as a Capstone Data Science project, focusing heavily on how "friction factors"—such as the Kenyan school calendar, toll road economics, and sudden weather changes—impact city-wide mobility.
+
+---
+
+## ✨ Key Features & Capabilities
+
+* **Dual-Mode AI Engine:** 
+  * **"Leave Right Now" (Live Mode):** Silently fetches live local weather, injects real-time accident telemetry, and provides a live Estimated Time of Arrival (ETA).
+  * **"Plan for Later" (Predictive Mode):** Allows users to input future variables (e.g., Next Monday at 5 PM with Heavy Rain) to forecast commute conditions.
+* **Segment-Level Visual Diagnostics:** While the ML model predicts the overall *Trip-Level* congestion, the app injects **Google Maps Live Traffic Tiles** into the background. This allows users to visually break down exactly which segments of the road (Red/Yellow/Green) are causing the AI's "Severe" prediction.
+* **Toll Economics (Expressway Toggle):** Users can choose to bypass the Nairobi Expressway. The system will dynamically reroute the underlying polyline to Mombasa Road/Waiyaki Way and recalculate transit friction.
+* **Dynamic Alternative Routing:** The map draws the primary AI-predicted route in bold, while rendering 1-2 alternative routes in dashed grey, giving drivers visual backup options.
+* **Premium "Smart City" UI/UX:** Built with modern Glassmorphism, dark mode aesthetics, an infinite-scrolling live ticker tape, and a glowing ETA dashboard widget.
 
 ---
 
@@ -12,41 +29,33 @@ This project was developed as part of a Data Science Traineeship, focusing on ho
 
 ### 1. The Intelligence Layer (Machine Learning)
 * **Model:** Random Forest Classifier (unpickled via `scikit-learn` in production).
-* **Feature Engineering:** * **Temporal:** Hour of day, day of week, and "High-Impact" school calendar flags (Opening, Closing, and Midterms).
+* **Target:** Ordinal Classification of traffic into four states: **0** (`Clear`), **1** (`Moderate`), **2** (`Heavy`), and **3** (`Severe`).
+* **Feature Engineering:** 
+    * **Temporal:** Hour of day, day of week, and engineered flags for "High-Impact" school transition weeks (Opening/Closing terms).
     * **Environmental:** Real-time temperature and precipitation data.
-    * **Spatial:** Matatu density metrics within a 150m buffer of major road segments.
-* **Target:** Ordinal Classification of traffic into four levels: **0** (Free-flow), **1** (Moderate), **2** (Heavy), and **3** (Gridlock).
+    * **Spatial (Dynamic):** Matatu (Transit) density metrics calculated on-the-fly.
 
-### 2. The Navigation Layer (APIs)
-* **Google Maps Platform:** Implemented `departure_time=now` to fetch live traffic conditions and incident-aware ETAs.
-* **Dynamic Rerouting:** Enabled `alternatives=true` to provide users with multiple path options, visualized through dynamic layers.
-* **Weather Integration:** Real-time data fetching to feed predictive input during live inference.
+### 2. The Navigation & API Layer
+* **Google Directions API:** Utilized `departure_time=now` for live accident awareness, and `alternatives=true` for multi-path rendering.
+* **Google Places API:** Replaced static dataset buffers with dynamic queries to count transit stations (`type=transit_station`) within a 2km radius of the destination.
+* **OpenWeatherMap API:** Real-time meteorological data fetching for live-inference inputs.
+* **Folium:** Map rendering with custom User-Agent headers to bypass production blockades.
 
 ### 3. The Production Stack (DevOps)
-* **Backend:** Django (Python)
+* **Backend:** Django (Python).
 * **Static Files:** Served via **WhiteNoise** for high-speed production delivery.
-* **Deployment:** Managed via **Render** with a custom Gunicorn/WSGI configuration.
-* **Security:** API keys and sensitive credentials managed through environment variables.
+* **Deployment:** Hosted on **Render** utilizing a custom Gunicorn/WSGI configuration.
+* **Security:** API keys and sensitive credentials strictly managed through environment variables (`.env`).
 
 ---
 
 ## 📊 Dataset Sources
-The model is built on a multi-source "Feature Bank":
+The foundational model was trained on a multi-source "Feature Bank":
 * **Target Variable:** A hybrid ground-truth dataset combining **TomTom Traffic Stats** and primary data collection via **Google Maps Typical Traffic**.
-* **Public Transport (GTFS):** Route and stop density from the **Digital Matatus** dataset.
+* **Public Transport (GTFS):** Baseline route and stop density sourced from the **Digital Matatus** project.
 * **Infrastructure (OSM):** Structural road data extracted via **OpenStreetMap**.
-* **Environmental:** Hourly precipitation/temperature from **Open-Meteo**.
-* **Temporal:** 2025 Ministry of Education dates, engineered to flag "High-Impact" transition weeks.
-
----
-
-## 🚀 Key Features
-* **Predictive Dashboard:** Forecasts traffic levels based on time, weather, and school events.
-* **Sleek ETA Widget:** A custom glowing dashboard showing live arrival times.
-* **Interactive Map:**
-    * **Primary Route:** Highlighted in bold for clarity.
-    * **Alternative Routes:** Shown as dashed lines to help users avoid sudden gridlock.
-* **Smart Advice:** AI-generated summaries to give drivers context on their route (e.g., "Standard volume for Nairobi").
+* **Environmental:** Historical hourly precipitation/temperature from **Open-Meteo**.
+* **Temporal:** 2025 Ministry of Education dates, engineered to flag peak "Friction Weeks".
 
 ---
 
@@ -54,21 +63,5 @@ The model is built on a multi-source "Feature Bank":
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/YourUsername/nairobi-traffic-ai.git](https://github.com/YourUsername/nairobi-traffic-ai.git)
-   cd nairobi-traffic-ai
-
-   Install dependencies:
-
-
-pip install -r requirements.txt
-Configure Environment Variables:
-Create a .env file in the root directory and add your keys:
-
-
-GOOGLE_MAPS_API_KEY=your_key_here
-OPENWEATHER_API_KEY=your_key_here
-SECRET_KEY=your_django_secret_key
-Run the server:
-
-Bash
-python manage.py runserver
+   git clone https://github.com/EstherLauraKituyi/Nairobi-Traffic-Prediction-Capstone.git
+   cd Nairobi-Traffic-Prediction-Capstone
