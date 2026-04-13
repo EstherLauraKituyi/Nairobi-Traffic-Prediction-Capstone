@@ -65,3 +65,20 @@ The foundational model was trained on a multi-source "Feature Bank":
    ```bash
    git clone https://github.com/EstherLauraKituyi/Nairobi-Traffic-Prediction-Capstone.git
    cd Nairobi-Traffic-Prediction-Capstone
+2. **Create a virtual environment & install dependencies:**
+   ``` bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use: venv\Scripts\activate
+   pip install -r requirements.txt
+
+3. **Configure Environment Variables:**
+Create a .env file in the root directory and add your API keys:
+GOOGLE_MAPS_API_KEY=your_google_maps_key_here
+OPENWEATHER_API_KEY=your_openweather_key_here
+SECRET_KEY=your_django_secret_key_here
+
+5. **Run the server:**
+```bash
+python manage.py runserver
+
+6. ** Navigate to http://127.0.0.1:8000 in your browser to view the app!**
