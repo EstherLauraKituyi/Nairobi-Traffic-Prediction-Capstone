@@ -119,14 +119,17 @@ def predict_traffic(request):
             # --- MAPPING (Folium Setup) ---
             m = folium.Map(location=[(from_lat + to_lat)/2, (from_lon + to_lon)/2], zoom_start=13, zoom_control=False, tiles=None)
             
+            # THE NEW FIX: Inject Google Maps with Live Traffic Lines baked in!
+            # This replaces the OpenStreetMap code entirely.
             folium.TileLayer(
-                tiles='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                headers={'User-Agent': 'NairobiTrafficAI/1.0 (Contact: lauramukite25@gmail.com)'} 
+                tiles='https://mt1.google.com/vt/lyrs=m@221097413,traffic&x={x}&y={y}&z={z}',
+                attr='Google Maps Live Traffic',
+                name='Google Traffic',
+                overlay=False,
+                control=True
             ).add_to(m)
 
             # --- GOOGLE DIRECTIONS (Live ETA & Alternative Routes) ---
-            # Added "alternatives=true"
             directions_url = f"https://maps.googleapis.com/maps/api/directions/json?origin={from_lat},{from_lon}&destination={to_lat},{to_lon}&alternatives=true&key={GOOGLE_API_KEY}"
             
             if avoid_expressway:
