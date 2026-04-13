@@ -72,13 +72,16 @@ The foundational model was trained on a multi-source "Feature Bank":
    pip install -r requirements.txt
 
 3. **Configure Environment Variables:**
+   
 Create a .env file in the root directory and add your API keys:
 GOOGLE_MAPS_API_KEY=your_google_maps_key_here
+
 OPENWEATHER_API_KEY=your_openweather_key_here
+
 SECRET_KEY=your_django_secret_key_here
 
-5. **Run the server:**
-```bash
+4.**Run the server:**
+  ```bash
 python manage.py runserver
-
-6. ** Navigate to http://127.0.0.1:8000 in your browser to view the app!**
+```
+5. Navigate to http://127.0.0.1:8000 in your browser to view the app🥳
