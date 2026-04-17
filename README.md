@@ -1,4 +1,5 @@
-# 🚗🇰🇪 Nairobi SmartTraffic AI 
+# 🚗🇰🇪 Nairobi SmartTraffic AI.
+
 **A Predictive & Real-Time Traffic Management System for Nairobi's Road Networks**
 
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
